@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use frontend\models\ContactForm;
+use frontend\models\User;
 
 /**
  * Site controller
@@ -33,7 +34,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $users = User::find()->all();
+        return $this->render('index', [
+            'users' => $users,
+        ]);
     }
 
 
