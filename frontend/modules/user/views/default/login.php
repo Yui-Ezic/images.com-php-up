@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php ActiveForm::end(); ?>
             <h5>Login with social:</h5>
             <?= yii\authclient\widgets\AuthChoice::widget([
-                'baseAuthUrl' => ['site/auth'],
+                'baseAuthUrl' => ['/user/default/auth'],
                 'popupMode' => false,
             ])?>
         </div>
