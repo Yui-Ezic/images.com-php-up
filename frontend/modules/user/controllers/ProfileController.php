@@ -51,6 +51,11 @@ class ProfileController extends Controller
         $currentUser = Yii::$app->user->identity;
         $user = $this->getUserById($id);
         
+        if ($currentUser->getId() == $user->getId()) {
+            Yii::$app->session->setFlash('error', 'Невозможно подписаться на себя.');
+            return $this->redirect(['/user/profile/view', 'nickname' => $user->getNickname()]);
+        }
+        
         $currentUser->followUser($user);
         
         return $this->redirect(['/user/profile/view', 'nickname' => $user->getNickname()]);

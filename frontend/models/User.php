@@ -134,7 +134,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        $expire = Yii::$app->ordparams['user.passwResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
 
@@ -227,6 +227,9 @@ class User extends ActiveRecord implements IdentityInterface
     public function followUser(User $user)
     {       
         /* @var $redis Connection*/
+        if ($this->getId() == $user->getId()) {
+            return;
+        }
         $redis = Yii::$app->redis;
         $redis->sadd("user:{$this->getId()}:subscriptions", $user->getId());
         $redis->sadd("user:{$user->getId()}:followers", $this->getId());
@@ -266,6 +269,9 @@ class User extends ActiveRecord implements IdentityInterface
         return User::find()->select('id, username, nickname')->where(['id' => $ids])->orderBy('username')->asArray()->all();
     }
     
+    /**
+     * @return integer
+     */
     public function countSubscriptions()
     {
         /* @var $redis Connection*/
@@ -273,6 +279,9 @@ class User extends ActiveRecord implements IdentityInterface
         return $redis->scard("user:{$this->getId()}:subscriptions");
     }
     
+    /**
+     * @return ineger
+     */
     public function countFollowers()
     {
         /* @var $redis Connection*/
@@ -280,6 +289,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $redis->scard("user:{$this->getId()}:followers");
     }
     
+    /**
+     * @param \frontend\models\User $user
+     * @return array
+     */
     public function getMutualSubscriptionsTo(User $user)
     {
         $thisSub_key = "user:{$this->getId()}:subscriptions";
@@ -290,5 +303,17 @@ class User extends ActiveRecord implements IdentityInterface
         
         $ids = $redis->sinter($thisSub_key, $userFollowers_key);
         return User::find()->select('id, username, nickname')->where(['id' => $ids])->orderBy('username')->asArray()->all();
+    }
+    
+    /**
+     * Check whether current user if following given user
+     * @param \frontend\models\User $user
+     * @return boolean
+     */
+    public function isFollowing(User $user)
+    {
+        /* @var $redis Connection */
+        $redis = Yii::$app->redis;
+        return (bool) $redis->sismember("user:{$this->getId()}:subscriptions", $user->getId());
     }
 }
