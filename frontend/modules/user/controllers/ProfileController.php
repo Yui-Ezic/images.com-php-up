@@ -5,6 +5,8 @@ namespace frontend\modules\user\controllers;
 use yii\web\Controller;
 use frontend\models\User;
 use Yii;
+use frontend\modules\user\models\forms\PictureForm;
+use yii\web\UploadedFile;
 
 
 /**
@@ -18,9 +20,15 @@ class ProfileController extends Controller
      */
     public function actionView($nickname)
     {
+        /* @var $currentUser User */
+        $currentUser = Yii::$app->user->identity;
+        
+        $modelPicture = new PictureForm;
+        
         return $this->render('view', [
             'user' => $this->findUser($nickname),
-            'currentUser' => Yii::$app->user->identity,
+            'currentUser' => $currentUser,
+            'modelPicture' => $modelPicture,
         ]);
     }
     
@@ -92,6 +100,32 @@ class ProfileController extends Controller
             return $user;
         }
         throw new NotFoundHttpException();
+    }
+    
+    public function actionUploadPicture()
+    {
+        if (Yii::$app->user->isGuest) {
+            return;
+        }
+        
+        $model = new PictureForm;
+        $model->picture = UploadedFile::getInstance($model, 'picture');
+        
+        if ($model->validate()) 
+        {    
+            /* @var $user frontend\models\User */
+            $user = Yii::$app->user->identity;
+            $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
+            
+            if ($user->save(false, ['picture'])) {
+                //print_r($user->attributes); 
+                die;
+            }
+        }
+        
+        echo '<pre>';
+        print_r($model->getErrors());
+        echo '</pre>';
     }
 
 
