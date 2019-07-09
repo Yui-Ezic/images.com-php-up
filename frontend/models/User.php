@@ -319,11 +319,26 @@ class User extends ActiveRecord implements IdentityInterface
         return (bool) $redis->sismember("user:{$this->getId()}:subscriptions", $user->getId());
     }
     
+    /**
+     * @return string
+     */
     public function getPicture() 
     {
         if ($this->picture) {
             return Yii::$app->storage->getFile($this->picture);
         }
         return self::DEFAULT_IMAGE;
+    }
+    
+    /**
+     * Delete picture from user profile
+     * @return boolean
+     */
+    public function deletePicture() {
+        if ($this->picture) {
+            $this->picture = null;
+            return $this->save(false, ['picture']);
+        }
+        return true;        
     }
 }

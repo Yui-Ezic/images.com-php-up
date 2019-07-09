@@ -103,6 +103,9 @@ class ProfileController extends Controller
         throw new NotFoundHttpException();
     }
     
+    /**
+     * @return json array
+     */
     public function actionUploadPicture()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -116,7 +119,7 @@ class ProfileController extends Controller
         
         if ($model->validate()) 
         {    
-            /* @var $user frontend\models\User */
+            /* @var $user User */
             $user = Yii::$app->user->identity;
             $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
             
@@ -128,6 +131,24 @@ class ProfileController extends Controller
         }
         
         return ['success' => false, 'errors' => $model->getErrors()['picture']];
+    }
+    
+    public function actionDeletePicture()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+        if ($user->deletePicture()) 
+        {
+            Yii::$app->session->setFlash('success', 'Picture deleted');
+        } else {
+            Yii::$app->session->setFlash('danger', 'Error occured');
+        }
+        
+        return $this->redirect(['/user/profile/view', 'nickname' => $user->getNickname()]);
     }
 
 

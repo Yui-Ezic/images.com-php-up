@@ -15,58 +15,60 @@ use dosamigos\fileupload\FileUpload;
 
 <img src="<?= $user->getPicture() ?>" alt="User picture" id="profile-picture" style="max-height: 320px;">
 
-<?php if ($currentUser && $user->equals($currentUser)): ?>
-    <div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
-    <div class="alert alert-danger display-none" id="profile-image-fail"></div>
+<?php if ($currentUser): ?>
+    <?php if ($user->equals($currentUser)): ?>
+        <div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
+        <div class="alert alert-danger display-none" id="profile-image-fail"></div>
 
-    <?= FileUpload::widget([
-        'model' => $modelPicture,
-        'attribute' => 'picture',
-        'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
-        'options' => ['accept' => 'image/*'],
-        'clientOptions' => [
-            'maxFileSize' => 2000000
-        ],
-        // Also, you can specify jQuery-File-Upload events
-        // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
-        'clientEvents' => [
-            'fileuploaddone' => 'function(e, data) {
-                                    if(data.result.success)
-                                    {
-                                        $("#profile-image-success").show();
-                                        $("#profile-image-fail").hide();
-                                        $("#profile-picture").attr("src", data.result.pictureUri);
-                                    } else {
-                                        $("#profile-image-success").hide();
-                                        $("#profile-image-fail").html(data.result.errors).show();
-                                    }
-                                }',
-        ],
-    ]); ?>
-<?php else: ?>
-
-    <?php if (!$currentUser->isFollowing($user)): ?>
-    <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
+        <?= FileUpload::widget([
+            'model' => $modelPicture,
+            'attribute' => 'picture',
+            'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
+            'options' => ['accept' => 'image/*'],
+            'clientOptions' => [
+                'maxFileSize' => 2000000
+            ],
+            // Also, you can specify jQuery-File-Upload events
+            // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
+            'clientEvents' => [
+                'fileuploaddone' => 'function(e, data) {
+                                        if(data.result.success)
+                                        {
+                                            $("#profile-image-success").show();
+                                            $("#profile-image-fail").hide();
+                                            $("#profile-picture").attr("src", data.result.pictureUri);
+                                        } else {
+                                            $("#profile-image-success").hide();
+                                            $("#profile-image-fail").html(data.result.errors).show();
+                                        }
+                                    }',
+            ],
+        ]); ?>
+        <a href="<?= Url::to(['/user/profile/delete-picture']); ?>" class="btn btn-danger">Delete picture</a>
     <?php else: ?>
-    <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
-    <?php endif; ?>
 
-    <hr/>
+        <?php if (!$currentUser->isFollowing($user)): ?>
+        <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
+        <?php else: ?>
+        <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
+        <?php endif; ?>
 
-    <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
-        <h5>Friends, who also following <?= Html::encode($user->username) ?>: </h5>
-        <div class="row">
-            <?php foreach ($mutualSubscriptions as $item): ?>
-                <div class="col-md-12">
-                    <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
-                        <?= Html::encode($item['username']) ?>
-                    </a>
-                </div>
-            <?php endforeach; ?>
-        </div>
+        <hr/>
+
+        <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
+            <h5>Friends, who also following <?= Html::encode($user->username) ?>: </h5>
+            <div class="row">
+                <?php foreach ($mutualSubscriptions as $item): ?>
+                    <div class="col-md-12">
+                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
+                            <?= Html::encode($item['username']) ?>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 <?php endif; ?>
-
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#SubcriptionsModal">
     Subcriptions: <?= $user->countSubscriptions() ?>
