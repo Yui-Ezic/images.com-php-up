@@ -3,6 +3,8 @@
 namespace frontend\models;
 
 use Yii;
+use frontend\models\User;
+use yii\redis\Connection;
 
 /**
  * This is the model class for table "post".
@@ -41,7 +43,56 @@ class Post extends \yii\db\ActiveRecord
         return Yii::$app->storage->getFile($this->filename);        
     }
     
+    /**
+     * Get author of the post
+     * @return User|null
+     */
     public function getUser(){
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    
+    /**
+     * Like current postby given user
+     * @param User $user
+     */
+    public function like(User $user)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        $redis->sadd("post:{$this->getId()}:likes", $user->getId());
+        $redis->sadd("post:{$user->getId()}:likes", $this->getId());
+    }
+    
+    public function getId(){
+        return $this->id;
+    }
+    
+    /**
+     * return mixed
+     */
+    public function countLikes()
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        return $redis->scard("post:{$this->getId()}:likes");
+    }
+    
+    /**
+     * Unlike current postby given user
+     * @param User $user
+     */
+    public function unlike(User $user)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        $redis->srem("post:{$this->getId()}:likes", $user->getId());
+        $redis->srem("post:{$user->getId()}:likes", $this->getId());
+    }
+    
+    public function isLikedBy(User $user)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        return $redis->sismember("post:{$this->getId()}:likes", $user->getId());
     }
 }
