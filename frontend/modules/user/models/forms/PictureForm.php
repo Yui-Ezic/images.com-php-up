@@ -26,6 +26,9 @@ class PictureForm extends Model
         $this->on(self::EVENT_AFTER_VALIDATE, [$this, 'resizePicture']);
     }
     
+    /**
+     * Resize profile picture if it is larger than max width and max height in params
+     */
     public function resizePicture() 
     {
         if ($this->picture->error) {
