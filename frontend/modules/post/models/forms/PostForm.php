@@ -48,7 +48,6 @@ class PostForm extends Model
         if ($this->validate()) {      
             $post = new Post();
             $post->description = $this->description;
-            $post->created_at = time();
             $post->filename = Yii::$app->storage->saveUploadedFile($this->picture);
             $post->user_id = $this->user->getId();
             return $post->save(false);
