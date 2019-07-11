@@ -363,4 +363,13 @@ class User extends ActiveRecord implements IdentityInterface
         $redis = Yii::$app->redis;
         return (bool) $redis->sismember("user:{$this->getId()}:likes", $postId);
     }
+    
+    /**
+     * Get users posts
+     * @return array
+     */
+    public function getPosts() {
+        $order = ['created_at' => SORT_DESC];
+        return $this->hasMany(Post::class, ['user_id' => 'id'])->orderBy($order)->all();
+    }
 }

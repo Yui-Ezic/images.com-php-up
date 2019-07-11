@@ -76,7 +76,7 @@ class Post extends ActiveRecord
         /* @var $redis Connection*/
         $redis = Yii::$app->redis;
         $redis->sadd("post:{$this->getId()}:likes", $user->getId());
-        $redis->sadd("post:{$user->getId()}:likes", $this->getId());
+        $redis->sadd("user:{$user->getId()}:likes", $this->getId());
     }
     
     public function getId(){
@@ -102,7 +102,7 @@ class Post extends ActiveRecord
         /* @var $redis Connection*/
         $redis = Yii::$app->redis;
         $redis->srem("post:{$this->getId()}:likes", $user->getId());
-        $redis->srem("post:{$user->getId()}:likes", $this->getId());
+        $redis->srem("user:{$user->getId()}:likes", $this->getId());
     }
     
     public function isLikedBy(User $user)

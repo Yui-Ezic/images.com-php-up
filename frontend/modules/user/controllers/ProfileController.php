@@ -8,6 +8,7 @@ use Yii;
 use frontend\modules\user\models\forms\PictureForm;
 use yii\web\UploadedFile;
 use yii\web\Response;
+use frontend\models\Post;
 
 
 /**
@@ -26,10 +27,17 @@ class ProfileController extends Controller
         
         $modelPicture = new PictureForm;
         
+        /* @var $user User */
+        $user = $this->findUser($nickname);
+        
+        /* @var $posts[] Post*/
+        $posts = $user->getPosts();
+        
         return $this->render('view', [
-            'user' => $this->findUser($nickname),
+            'user' => $user,
             'currentUser' => $currentUser,
             'modelPicture' => $modelPicture,
+            'posts' => $posts,
         ]);
     }
     
