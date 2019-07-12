@@ -372,4 +372,11 @@ class User extends ActiveRecord implements IdentityInterface
         $order = ['created_at' => SORT_DESC];
         return $this->hasMany(Post::class, ['user_id' => 'id'])->orderBy($order)->all();
     }
+    
+    /**
+     * @return integer
+     */
+    public function getPostCount() {
+        return $this->hasMany(Post::class, ['user_id' => 'id'])->count();
+    }
 }

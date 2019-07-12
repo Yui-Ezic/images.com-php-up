@@ -9,77 +9,122 @@ use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
 use dosamigos\fileupload\FileUpload;
 use yii\web\JqueryAsset;
+
+$this->title = Html::encode($user->username);
 ?>
-<h1> <?= Html::encode($user->username) ?> </h1>
-<p> <?= HtmlPurifier::process($user->about) ?> </p>
-<hr/>
+<div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
+<div class="alert alert-danger display-none" id="profile-image-fail"></div>
 
-<img src="<?= $user->getPicture() ?>" alt="User picture" id="profile-picture" style="max-height: 320px;">
+<div class="page-posts no-padding">
+    <div class="row">
+        <div class="page page-post col-sm-12 col-xs-12 post-82">
 
-<?php if ($currentUser): ?>
-    <?php if ($user->equals($currentUser)): ?>
-        <div class="alert alert-success display-none" id="profile-image-success">Profile image updated</div>
-        <div class="alert alert-danger display-none" id="profile-image-fail"></div>
 
-        <?=
-        FileUpload::widget([
-            'model' => $modelPicture,
-            'attribute' => 'picture',
-            'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
-            'options' => ['accept' => 'image/*'],
-            'clientOptions' => [
-                'maxFileSize' => 2000000
-            ],
-            // Also, you can specify jQuery-File-Upload events
-            // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
-            'clientEvents' => [
-                'fileuploaddone' => 'function(e, data) {
-                                        if(data.result.success)
-                                        {
-                                            $("#profile-image-success").show();
-                                            $("#profile-image-fail").hide();
-                                            $("#profile-picture").attr("src", data.result.pictureUri);
-                                        } else {
-                                            $("#profile-image-success").hide();
-                                            $("#profile-image-fail").html(data.result.errors).show();
-                                        }
-                                    }',
-            ],
-        ]);
-        ?>
-        <a href="<?= Url::to(['/user/profile/delete-picture']); ?>" class="btn btn-danger">Delete picture</a>
-    <?php else: ?>
+            <div class="blog-posts blog-posts-large">
 
-        <?php if (!$currentUser->isFollowing($user)): ?>
-            <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
-        <?php else: ?>
-            <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
-        <?php endif; ?>
+                <div class="row">
 
-        <hr/>
+                    <!-- profile -->
+                    <article class="profile col-sm-12 col-xs-12">                                            
+                        <div class="profile-title">
+                            <img src="<?= $user->getPicture() ?>" id="profile-picture" class="author-image" />
+                            <div class="author-name"><?= Html::encode($user->username) ?></div>
 
-        <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
-            <h5>Friends, who also following <?= Html::encode($user->username) ?>: </h5>
-            <div class="row">
-            <?php foreach ($mutualSubscriptions as $item): ?>
-                    <div class="col-md-12">
-                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
-                <?= Html::encode($item['username']) ?>
-                        </a>
+                            <?php if ($currentUser && $user->equals($currentUser)): ?>                              
+                                <?=
+                                FileUpload::widget([
+                                    'model' => $modelPicture,
+                                    'attribute' => 'picture',
+                                    'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
+                                    'options' => ['accept' => 'image/*'],
+                                    'clientOptions' => [
+                                        'maxFileSize' => 2000000
+                                    ],
+                                    // Also, you can specify jQuery-File-Upload events
+                                    // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
+                                    'clientEvents' => [
+                                        'fileuploaddone' => 'function(e, data) {
+                                            if(data.result.success)
+                                            {
+                                                $("#profile-image-success").show();
+                                                $("#profile-image-fail").hide();
+                                                $("#profile-picture").attr("src", data.result.pictureUri);
+                                            } else {
+                                                $("#profile-image-success").hide();
+                                                $("#profile-image-fail").html(data.result.errors).show();
+                                            }
+                                        }',
+                                    ],
+                                ]);
+                                ?>
+                                <a href="<?= Url::to(['/user/profile/delete-picture']); ?>" class="btn btn-danger">Delete picture</a>
+
+                                <a href="#" class="btn btn-default">Edit profile</a>
+                            <?php endif; ?>
+
+                            <?php if ($currentUser && !$user->equals($currentUser)): ?>
+                                <?php if (!$currentUser->isFollowing($user)): ?>
+                                    <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
+                                <?php else: ?>
+                                    <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
+                                <?php endif; ?>
+
+                                <hr/>
+
+                                <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
+                                    <h5>Friends, who also following <?= Html::encode($user->username) ?>: </h5>
+                                    <div class="row">
+                                        <?php foreach ($mutualSubscriptions as $item): ?>
+                                            <div class="col-md-12">
+                                                <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
+                                                    <?= Html::encode($item['username']) ?>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <hr/>
+                                <?php endif; ?>
+                            <?php endif; ?>
+
+                        </div>
+
+                        <div class="profile-description">
+                            <p><?= HtmlPurifier::process($user->about) ?></p>
+                        </div>
+                        <div class="profile-bottom">
+                            <div class="profile-post-count">
+                                <span><?= $user->getPostCount() ?> posts</span>
+                            </div>
+                            <div class="profile-followers">
+                                <a href="#" data-toggle="modal" data-target="#FollowersModal"> <?= $user->countFollowers() ?> followers</a>
+                            </div>
+                            <div class="profile-following">
+                                <a href="#" data-toggle="modal" data-target="#SubcriptionsModal"><?= $user->countSubscriptions() ?> following</a>    
+                            </div>
+                        </div>
+                    </article>
+
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="row profile-posts">
+                            <?php foreach ($posts as $post): ?>
+                                <div class="col-md-4 profile-post">
+                                    <a href="<?= Url::to(['/post/default/view', 'id' => $post->getId()])?>">
+                                        <img src="<?=Yii::$app->storage->getFile($post->filename) ?>" class="author-image" />
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
-            <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    <?php endif; ?>
-<?php endif; ?>
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#SubcriptionsModal">
-    Subcriptions: <?= $user->countSubscriptions() ?>
-</button>
 
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#FollowersModal">
-    Followers: <?= $user->countFollowers() ?>
-</button>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="SubcriptionsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -91,13 +136,13 @@ use yii\web\JqueryAsset;
             </div>
             <div class="modal-body">
                 <div class="row">
-<?php foreach ($user->getSubscriptions() as $subscription): ?>
+                    <?php foreach ($user->getSubscriptions() as $subscription): ?>
                         <div class="col-md-12">
                             <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($subscription['nickname'] ? $subscription['nickname'] : $subscription['id'])]) ?>">
-    <?= Html::encode($subscription['username']) ?>
+                                <?= Html::encode($subscription['username']) ?>
                             </a>
                         </div>
-<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <div class="modal-footer">
@@ -116,13 +161,13 @@ use yii\web\JqueryAsset;
             </div>
             <div class="modal-body">
                 <div class="row">
-<?php foreach ($user->getFollowers() as $follower): ?>
+                    <?php foreach ($user->getFollowers() as $follower): ?>
                         <div class="col-md-12">
                             <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($follower['nickname'] ? $follower['nickname'] : $follower['id'])]) ?>">
-    <?= Html::encode($follower['username']) ?>
+                                <?= Html::encode($follower['username']) ?>
                             </a>
                         </div>
-<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <div class="modal-footer">
@@ -132,44 +177,8 @@ use yii\web\JqueryAsset;
     </div>
 </div>
 
-<h1>Posts</h1>
-<hr/>
 
-<div class="row">
-    <?php foreach ($posts as $post): ?>
-        <div class="col-md-12">
-            <div class="col-md-12">
-                <img src="<?= $user->getPicture() ?>" width="60" height="60" />
-                <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => $user->getNickname()]); ?>">
-                    <?php echo Html::encode($user->username); ?>
-                </a>
-                
-                <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" />
-                <div class="col-md-12">
-                    <?php echo HtmlPurifier::process($post->description); ?>
-                </div>
-                
-                <div class="col-md-12">
-                    <?php echo Yii::$app->formatter->asDatetime($post->created_at); ?>
-                </div>
-                
-                <div class="col-md-12">
-                    Likes: <span class="likes-count"><?php echo $post->countLikes(); ?></span>
-
-                    <a href="#" class="btn btn-primary button-unlike <?php echo ($currentUser->likesPost($post->id)) ? "" : "display-none"; ?>" data-id="<?php echo $post->id; ?>">
-                        Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
-                    </a>
-                    <a href="#" class="btn btn-primary button-like <?php echo ($currentUser->likesPost($post->id)) ? "display-none" : ""; ?>" data-id="<?php echo $post->id; ?>">
-                        Like&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
-                    </a>
-                </div>
-                
-            </div>
-        </div>
-        <div class="col-md-12"><hr/></div> 
-    <?php endforeach; ?>
-</div>
-
-<?php $this->registerJsFile('@web/js/likes.js', [
+<?php
+$this->registerJsFile('@web/js/likes.js', [
     'depends' => JqueryAsset::className(),
 ]);
