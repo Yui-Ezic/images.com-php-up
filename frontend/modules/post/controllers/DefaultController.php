@@ -9,6 +9,8 @@ use Yii;
 use frontend\models\Post;
 use yii\web\Response;
 use frontend\models\User;
+use frontend\modules\post\models\forms\CommentForm;
+use frontend\models\Comment;
 
 /**
  * Default controller for the `post` module
@@ -48,9 +50,18 @@ class DefaultController extends Controller
         /* @var $currentUser User*/
         $currentUser = Yii::$app->user->identity;
         
+        /* @var $post Post*/
+        $post = $this->findPost($id);
+        
+        $commentForm = new CommentForm();
+        
+        $comments = $post->getAvaliableComments();
+        
         return $this->render('view', [
-            'post' => $this->findPost($id),
+            'post' => $post,
             'currentUser' => $currentUser,
+            'commentForm' => $commentForm,
+            'comments' => $comments,
         ]);
     }
     
@@ -104,5 +115,63 @@ class DefaultController extends Controller
             'success' => true,
             'likesCount' => $post->countLikes(),
         ];
+    }
+    
+    public function actionAddComment ($id) {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        $model = new CommentForm(Yii::$app->user->identity, $id);
+        
+        if ($model->load(Yii::$app->request->post()))
+        {            
+            if($model->save())
+            {
+                Yii::$app->session->setFlash('success', 'Comment created!');
+            }
+            else 
+            {
+                Yii::$app->session->setFlash('danger', 'Error occurred!');
+            }
+        }
+        
+        return $this->redirect(['/post/default/view',
+            'id' => $id,
+        ]);
+    }
+    
+    public function actionDeleteComment()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $id = Yii::$app->request->post('id');
+        
+        /* @var $comment Comment*/
+        $comment = Comment::getById($id);
+        
+        /* @var $currentUser User*/
+        $currentUser = Yii::$app->user->identity;
+        
+        if (!$currentUser->equals($comment->user)){
+            return [
+                'success' => false,
+                'error' => 'Wrong user'
+            ];
+        }
+        
+        if ($comment->delete())
+        {
+            return ['success' => true];
+        }
+        
+        return [
+                'success' => false,
+                'error' => "Can\'t delete"
+            ];
     }
 }

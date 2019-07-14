@@ -7,6 +7,7 @@ use frontend\models\User;
 use yii\redis\Connection;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use frontend\models\Comment;
 
 /**
  * This is the model class for table "post".
@@ -19,6 +20,9 @@ use yii\db\ActiveRecord;
  */
 class Post extends ActiveRecord
 {
+    
+    const COMMENTS_LIMIT = 10;
+    
     /**
      * {@inheritdoc}
      */
@@ -110,5 +114,17 @@ class Post extends ActiveRecord
         /* @var $redis Connection*/
         $redis = Yii::$app->redis;
         return $redis->sismember("post:{$this->getId()}:likes", $user->getId());
+    }
+    
+    public function getComments($limit = self::COMMENTS_LIMIT)
+    {
+        $order = ['comment.created_at' => SORT_DESC];
+        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->all();
+    }
+    
+    public function getAvaliableComments($limit = self::COMMENTS_LIMIT)
+    {
+        $order = ['comment.created_at' => SORT_DESC];
+        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->where(['not in', "status", Comment::STATUS_DELETED])->all();
     }
 }

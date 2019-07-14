@@ -2,10 +2,13 @@
 /* @var $this yii\web\View */
 /* @var $post frontend\models\Post */
 /* @var $currentUser frontend\models\User */
+/* @var $commentForm frontend\modules\post\models\forms\CommentForm */
+/* @var $comments[] frontend\models\Comment*/
 
 use yii\bootstrap\Html;
 use yii\web\JqueryAsset;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 ?>
 
 <div class="page-posts no-padding">
@@ -47,13 +50,15 @@ use yii\helpers\Url;
                                 <span>6 Likes</span>-->
 
                                 Likes: <span class="likes-count"><?= $post->countLikes(); ?></span>
-
-                                <a href="#" class="btn btn-default button-unlike <?php echo ($currentUser->likesPost($post->id)) ? "" : "display-none"; ?>" data-id="<?= $post->id; ?>">
-                                    Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
-                                </a>
-                                <a href="#" class="btn btn-default button-like <?php echo ($currentUser->likesPost($post->id)) ? "display-none" : ""; ?>" data-id="<?= $post->id; ?>">
-                                    Like&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
-                                </a>
+                                
+                                <?php if($currentUser): ?>
+                                    <a href="#" class="btn btn-default button-unlike <?php echo ($currentUser->likesPost($post->id)) ? "" : "display-none"; ?>" data-id="<?= $post->id; ?>">
+                                        Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
+                                    </a>
+                                    <a href="#" class="btn btn-default button-like <?php echo ($currentUser->likesPost($post->id)) ? "display-none" : ""; ?>" data-id="<?= $post->id; ?>">
+                                        Like&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                             <div class="post-comments">
                                 <a href="#">5 comments</a>
@@ -71,7 +76,7 @@ use yii\helpers\Url;
 
 
                     <div class="col-sm-12 col-xs-12">
-                        <h4>5 comments</h4>
+                        <h4><?= count($comments)    ?> comments</h4>
                         <div class="comments-post">
 
                             <div class="single-item-title"></div>
@@ -79,15 +84,27 @@ use yii\helpers\Url;
                                 <ul class="comment-list">
 
                                     <!-- comment item -->
-                                    <li class="comment">
-                                        <div class="comment-user-image">
-                                            <img src="img/demo/avatar.jpg">
-                                        </div>
-                                        <div class="comment-info">
-                                            <h4 class="author"><a href="#">Firstname Lastname</a> <span>(April 10, 2017)</span></h4>
-                                            <p>Lorem ipsum dolor sit amet, iisque bonorum consequat an vis, ea dico sonet dolorum eam!</p>
-                                        </div>
-                                    </li>
+                                    <?php foreach($comments as $comment): ?>
+                                        <li id='comment-<?=$comment->id?>' class="comment">
+                                            <div class="comment-user-image">
+                                                <img src="<?= $comment->user->getPicture()?>">
+                                            </div>
+                                            <div class="comment-info">
+                                                <h4 class="author">
+                                                    <a href="<?= Url::to(['/user/profile/view', 'nickname' => $comment->user->getNickname()]) ?>">
+                                                        <?= $comment->user->username ?>
+                                                    </a> 
+                                                    <span>(<?= Yii::$app->formatter->asDatetime($comment->created_at) ?>)</span>
+                                                </h4>
+                                                <p><?= Html::encode($comment->text)?></p>
+                                                <?php if($currentUser && $currentUser->equals($comment->user)): ?>
+                                                    <br/>  
+                                                    <a href="#" class="btn btn-default comment-edit">Edit</a>
+                                                    <a href="#" class="btn btn-default comment-delete" data-id="<?=$comment->id?>">Delete</a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </li>
+                                    <?php endforeach;?>
                                     <!-- comment item -->
 
                                 </ul>
@@ -100,14 +117,25 @@ use yii\helpers\Url;
                     <div class="col-sm-12 col-xs-12">
                         <div class="comment-respond">
                             <h4>Leave a Reply</h4>
-                            <form action="#" method="post">
-                                <p class="comment-form-comment">
-                                    <textarea name="comment" rows="6" class="form-control" placeholder="Text" aria-required="true"></textarea>
-                                </p>
-                                <p class="form-submit">
-                                    <button type="submit" class="btn btn-secondary">Send</button> 
-                                </p>				
-                            </form>
+                            <?php
+                            $form = ActiveForm::begin([
+                                        'action' => Url::to(['/post/default/add-comment', 'id' => $post->getId()])
+                                    ])
+                            ?>
+                            <p class="comment-form-comment">
+                                <?=
+                                $form->field($commentForm, 'text')->textarea([
+                                    'rows' => 6,
+                                    'aria-required' => 'true',
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Text'
+                                ])->label(false)
+                                ?>
+                            </p>
+                            <p class="form-submit">
+                                <?= Html::submitButton('Send', ['class' => 'btn btn-secondary']) ?>
+                            </p>
+                            <?php ActiveForm::end(); ?>
                         </div>
                     </div>
                 </div>
@@ -115,6 +143,10 @@ use yii\helpers\Url;
         </div>
     </div>
 </div>
-<?php $this->registerJsFile('@web/js/likes.js', [
+<?php
+$this->registerJsFile('@web/js/likes.js', [
+    'depends' => JqueryAsset::className(),
+]);
+$this->registerJsFile('@web/js/comments.js', [
     'depends' => JqueryAsset::className(),
 ]);
