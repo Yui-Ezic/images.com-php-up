@@ -17,6 +17,7 @@ use frontend\models\Comment;
  * @property string $filename
  * @property string $description
  * @property int $created_at
+ * @property int $complaints
  */
 class Post extends ActiveRecord
 {
@@ -142,5 +143,33 @@ class Post extends ActiveRecord
     public function countComments()
     {
         return $this->hasMany(Comment::class, ['post_id' => 'id'])->where(['is_avaliable' => Comment::STATUS_ACTIVE])->count();
+    }
+    
+    /**
+     * Add complaint to post from given user
+     * @param \frontend\models\User $user
+     * @return boolean
+     */
+    public function complain(User $user)
+    {
+        /* @var $redis Connection */
+        $redis = Yii::$app->redis;
+        $key = "post:{$this->getId()}:complaints";
+        
+        if (!$redis->sismember($key, $user->getId())) {
+            $redis->sadd($key, $user->getId());        
+            $this->complaints++;
+            return $this->save(false, ['complaints']);
+        }
+    }
+    
+    /**
+     * @param \frontend\models\User $user
+     */
+    public function isReported(User $user)
+    {
+        /* @var $redis Connection */
+        $redis = Yii::$app->redis;
+        return $redis->sismember("post:{$this->id}:complaints", $user->getId());
     }
 }

@@ -68,7 +68,13 @@ use yii\widgets\ActiveForm;
                                 <span><?= Yii::$app->formatter->asDatetime($post->created_at) ?></span>    
                             </div>
                             <div class="post-report">
-                                <a href="#">Report post</a>    
+                                <?php if(!$post->isReported($currentUser)):?>
+                                <a href="#" class="btn btn-default button-complain" data-id="<?= $post->id ?>">
+                                    Report post <i class="fa fa-cog fa-spin fa-fw icon-preloader" style="display:none"></i>
+                                </a>    
+                                <?php else: ?>
+                                <p>Post has been reported</p>
+                                <?php endif; ?>  
                             </div>
                         </div>
                     </article>
@@ -149,5 +155,8 @@ $this->registerJsFile('@web/js/likes.js', [
     'depends' => JqueryAsset::className(),
 ]);
 $this->registerJsFile('@web/js/comments.js', [
+    'depends' => JqueryAsset::className(),
+]);
+$this->registerJsFile('@web/js/complaints.js', [
     'depends' => JqueryAsset::className(),
 ]);
