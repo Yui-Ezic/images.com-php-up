@@ -36,8 +36,7 @@ class CommentForm extends Model
             $comment->author_id = $this->user->getId();
             $comment->post_id = $this->post_id;
             $comment->text = $this->text;
-            $comment->status = Comment::STATUS_ACTIVE;
-            if ($comment->save(false)) {
+            if ($comment->save()) {
                 return true;
             }
         }
