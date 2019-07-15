@@ -59,6 +59,17 @@ class Post extends ActiveRecord
         ];
     }
     
+    /**
+     * Find post by id
+     * 
+     * @param integer $id
+     * @return static || null
+     */
+    public static function getById($id)
+    {
+        return static::findOne(['id' => $id]);
+    }
+    
     public function getImage() {
         return Yii::$app->storage->getFile($this->filename);        
     }
@@ -125,6 +136,11 @@ class Post extends ActiveRecord
     public function getAvaliableComments($limit = self::COMMENTS_LIMIT)
     {
         $order = ['comment.created_at' => SORT_DESC];
-        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->where(['not in', "status", Comment::STATUS_DELETED])->all();
+        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->where(['is_avaliable' => Comment::STATUS_ACTIVE])->all();
+    }
+    
+    public function countComments()
+    {
+        return $this->hasMany(Comment::class, ['post_id' => 'id'])->where(['is_avaliable' => Comment::STATUS_ACTIVE])->count();
     }
 }

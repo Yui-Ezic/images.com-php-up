@@ -16,6 +16,7 @@ use yii\db\ActiveRecord;
  * @property int $status
  * @property int $created_at
  * @property int $edited_at
+ * @property int $is_avaliable
  */
 class Comment extends \yii\db\ActiveRecord
 {
@@ -37,9 +38,10 @@ class Comment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['author_id', 'post_id', 'status', 'created_at', 'edited_at'], 'integer'],
+            [['author_id', 'post_id', 'status', 'created_at', 'edited_at', 'is_avaliable'], 'integer'],
             [['text'], 'string'],
-            ['status', 'default', 'value' => self::STATUS_ACTIVE]
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['is_avaliable', 'default','value' => self::STATUS_ACTIVE],
         ];
     }
 
@@ -92,9 +94,35 @@ class Comment extends \yii\db\ActiveRecord
         return static::findOne(['id' => $id]);
     }
     
+    /**
+     * Delete comment
+     * 
+     * @return bool whether the saving succeeded (i.e. no validation errors occurred)
+     */
     public function delete()
     {
-        $this->status = self::STATUS_DELETED;
+        $this->is_avaliable = self::STATUS_DELETED;
         return $this->save();
+    }
+    
+    /**
+     * Refresh deleted comment
+     * 
+     * @return bool
+     */
+    public function refreshComment() {
+        $this->is_avaliable = self::STATUS_ACTIVE;
+        return $this->save();
+    }
+    
+    /**
+     * Refresh deleted comment by id
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public static function refreshById($id)
+    {
+        return self::getById($id)->refreshComment();
     }
 }

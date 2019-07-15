@@ -174,4 +174,38 @@ class DefaultController extends Controller
                 'error' => "Can\'t delete"
             ];
     }
+    
+    public function actionRefreshComment()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $id = Yii::$app->request->post('id');
+        
+        /* @var $comment Comment*/
+        $comment = Comment::getById($id);
+        
+        /* @var $currentUser User*/
+        $currentUser = Yii::$app->user->identity;
+        
+        if (!$currentUser->equals($comment->user)){
+            return [
+                'success' => false,
+                'error' => 'Wrong user'
+            ];
+        }
+        
+        if ($comment->refreshComment())
+        {
+            return ['success' => true, 'text' => $comment->text];
+        }
+        
+        return [
+                'success' => false,
+                'error' => "Can\'t refresh"
+            ];
+    }
 }

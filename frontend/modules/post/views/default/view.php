@@ -61,7 +61,7 @@ use yii\widgets\ActiveForm;
                                 <?php endif; ?>
                             </div>
                             <div class="post-comments">
-                                <a href="#">5 comments</a>
+                                <a href="#"><?= count($comments)?> comments</a>
 
                             </div>
                             <div class="post-date">
@@ -76,7 +76,7 @@ use yii\widgets\ActiveForm;
 
 
                     <div class="col-sm-12 col-xs-12">
-                        <h4><?= count($comments)    ?> comments</h4>
+                        <h4><?= count($comments)?> comments</h4>
                         <div class="comments-post">
 
                             <div class="single-item-title"></div>
@@ -96,11 +96,12 @@ use yii\widgets\ActiveForm;
                                                     </a> 
                                                     <span>(<?= Yii::$app->formatter->asDatetime($comment->created_at) ?>)</span>
                                                 </h4>
-                                                <p><?= Html::encode($comment->text)?></p>
+                                                <p id="textArea-<?=$comment->id?>"><?= Html::encode($comment->text)?></p>
                                                 <?php if($currentUser && $currentUser->equals($comment->user)): ?>
                                                     <br/>  
                                                     <a href="#" class="btn btn-default comment-edit">Edit</a>
                                                     <a href="#" class="btn btn-default comment-delete" data-id="<?=$comment->id?>">Delete</a>
+                                                    <a href="#" class="btn btn-default comment-refresh display-none" data-id="<?=$comment->id?>">Refresh</a>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
