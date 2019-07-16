@@ -5,6 +5,7 @@ use Yii;
 use yii\web\Controller;
 use frontend\models\ContactForm;
 use frontend\models\User;
+use yii\web\Cookie;
 
 /**
  * Site controller
@@ -50,30 +51,6 @@ class SiteController extends Controller
         ]);
     }
 
-
-    /**
-     * Displays contact page.
-     *
-     * @return mixed
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
-
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
-    }
-
     /**
      * Displays about page.
      *
@@ -82,5 +59,33 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+    
+    /**
+     * Change language
+     * @return mixed
+     */
+    public function actionLanguage()
+    {
+        // Hometask: check if language is supported        
+        $language = Yii::$app->request->post('language');
+        
+        $supportedLanguages = Yii::$app->params['supportedLanguages'];
+        
+        if (!isset($language) || !in_array($language, $supportedLanguages))
+        {
+            Yii::$app->session->setFlash('danger', 'Unknown language');
+            return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+        }
+        
+        Yii::$app->language = $language;
+        
+        $languageCookie = new Cookie([
+            'name' => 'language',
+            'value' => $language,
+            'expire' => time() + 60 * 60 * 24 * 30, // 30 days
+        ]);
+        Yii::$app->response->cookies->add($languageCookie);
+        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
     }
 }

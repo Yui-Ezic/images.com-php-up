@@ -14,4 +14,6 @@ return [
     ],
     
     'feedPostLimit' => 20,
+    
+    'supportedLanguages' => ['en-US', 'ru-RU'],
 ];
