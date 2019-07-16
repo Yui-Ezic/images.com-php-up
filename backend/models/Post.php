@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use common\models\PostParent;
 
 /**
  * This is the model class for table "post".
@@ -14,31 +15,8 @@ use Yii;
  * @property int $created_at
  * @property int $complaints
  */
-class Post extends \yii\db\ActiveRecord
-{
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'post';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'user_id' => 'User ID',
-            'filename' => 'Filename',
-            'description' => 'Description',
-            'created_at' => 'Created At',
-            'complaints' => 'Complaints',
-        ];
-    }
-    
+class Post extends PostParent
+{    
     public function findComplaints()
     {
         return Post::find()->where('complaints > 0')->orderBy('complaints DESC');

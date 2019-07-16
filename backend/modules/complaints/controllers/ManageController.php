@@ -67,7 +67,7 @@ class ManageController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        Post::DeletePostById($id);
 
         return $this->redirect(['index']);
     }

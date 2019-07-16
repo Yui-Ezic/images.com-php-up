@@ -8,6 +8,7 @@ use yii\redis\Connection;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use frontend\models\Comment;
+use common\models\PostParent;
 
 /**
  * This is the model class for table "post".
@@ -19,18 +20,10 @@ use frontend\models\Comment;
  * @property int $created_at
  * @property int $complaints
  */
-class Post extends ActiveRecord
+class Post extends PostParent
 {
     
     const COMMENTS_LIMIT = 10;
-    
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'post';
-    }
     
     /**
      * {@inheritdoc}
@@ -46,19 +39,6 @@ class Post extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'user_id' => 'User ID',
-            'filename' => 'Filename',
-            'description' => 'Description',
-            'created_at' => 'Created At',
-        ];
-    }
     
     /**
      * Find post by id
