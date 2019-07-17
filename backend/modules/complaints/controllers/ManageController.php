@@ -71,7 +71,7 @@ class ManageController extends Controller
 
         return $this->redirect(['index']);
     }
-    
+     
     /**
      * Approve post action if it looks ok
      * @param integer $id

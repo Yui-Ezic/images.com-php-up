@@ -5,6 +5,8 @@ namespace frontend\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use frontend\models\events\CommentCreatedEvent;
+use frontend\models\events\CommentDeletedEvent;
 
 /**
  * This is the model class for table "comment".
@@ -23,6 +25,15 @@ class Comment extends \yii\db\ActiveRecord
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
     const STATUS_EDITED = 2;
+    
+    const EVENT_COMMENT_CREATED = 'comment_created';
+    const EVENT_COMMENT_DELETED = 'comment deleted';
+    
+    public function init() {
+        parent::init();
+        $this->on(self::EVENT_COMMENT_CREATED, [Post::class, 'addCommentToRedis']);
+        $this->on(self::EVENT_COMMENT_DELETED, [Post::class, 'deleteCommentFromRedis']);
+    }
     
     /**
      * {@inheritdoc}
@@ -76,7 +87,12 @@ class Comment extends \yii\db\ActiveRecord
         ];
     }
     
-    /**
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+
+        /**
      * @return User | null
      */
     public function getUser() {
@@ -101,6 +117,13 @@ class Comment extends \yii\db\ActiveRecord
      */
     public function delete()
     {
+        $event = new CommentCreatedEvent();
+        $event->user_id = $this->author_id;
+        $event->post_id = $this->post_id;
+        $event->comment_id = $this->getId();
+        
+        $this->trigger(self::EVENT_COMMENT_DELETED, $event);
+        
         $this->is_avaliable = self::STATUS_DELETED;
         return $this->save();
     }
@@ -111,6 +134,13 @@ class Comment extends \yii\db\ActiveRecord
      * @return bool
      */
     public function refreshComment() {
+        $event = new CommentCreatedEvent();
+        $event->user_id = $this->author_id;
+        $event->post_id = $this->post_id;
+        $event->comment_id = $this->getId();
+        
+        $this->trigger(self::EVENT_COMMENT_CREATED, $event);
+        
         $this->is_avaliable = self::STATUS_ACTIVE;
         return $this->save();
     }

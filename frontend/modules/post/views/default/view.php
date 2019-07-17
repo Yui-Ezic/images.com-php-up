@@ -67,6 +67,7 @@ use yii\widgets\ActiveForm;
                             <div class="post-date">
                                 <span><?= Yii::$app->formatter->asDatetime($post->created_at) ?></span>    
                             </div>
+                            <?php if ($currentUser): ?>
                             <div class="post-report">
                                 <?php if(!$post->isReported($currentUser)):?>
                                 <a href="#" class="btn btn-default button-complain" data-id="<?= $post->id ?>">
@@ -76,6 +77,7 @@ use yii\widgets\ActiveForm;
                                 <p>Post has been reported</p>
                                 <?php endif; ?>  
                             </div>
+                            <?php endif; ?>
                         </div>
                     </article>
                     <!-- feed item -->
@@ -105,7 +107,6 @@ use yii\widgets\ActiveForm;
                                                 <p id="textArea-<?=$comment->id?>"><?= Html::encode($comment->text)?></p>
                                                 <?php if($currentUser && $currentUser->equals($comment->user)): ?>
                                                     <br/>  
-                                                    <a href="#" class="btn btn-default comment-edit">Edit</a>
                                                     <a href="#" class="btn btn-default comment-delete" data-id="<?=$comment->id?>">Delete</a>
                                                     <a href="#" class="btn btn-default comment-refresh display-none" data-id="<?=$comment->id?>">Refresh</a>
                                                 <?php endif; ?>

@@ -1,10 +1,10 @@
 <?php
 namespace frontend\modules\post\models\forms;
 
-use Yii;
 use yii\base\Model;
 use frontend\models\User;
 use frontend\models\Comment;
+use frontend\models\events\CommentCreatedEvent;
 
 class CommentForm extends Model
 {
@@ -37,6 +37,12 @@ class CommentForm extends Model
             $comment->post_id = $this->post_id;
             $comment->text = $this->text;
             if ($comment->save()) {
+                $event = new CommentCreatedEvent();
+                $event->user_id = $this->user->getId();
+                $event->post_id = $this->post_id;
+                $event->comment_id = $comment->getId();
+                
+                $comment->trigger($comment::EVENT_COMMENT_CREATED, $event);
                 return true;
             }
         }

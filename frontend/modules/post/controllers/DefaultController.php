@@ -51,7 +51,10 @@ class DefaultController extends Controller
         $currentUser = Yii::$app->user->identity;
         
         /* @var $post Post*/
-        $post = $this->findPost($id);
+        if (!$post = $this->findPost($id))
+        {
+            throw new \yii\web\NotFoundHttpException();
+        }
         
         $commentForm = new CommentForm();
         

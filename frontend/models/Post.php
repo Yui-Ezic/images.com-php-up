@@ -9,6 +9,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use frontend\models\Comment;
 use common\models\PostParent;
+use frontend\models\events\CommentCreatedEvent;
 
 /**
  * This is the model class for table "post".
@@ -63,6 +64,12 @@ class Post extends PostParent
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
     
+    public function getId(){
+        return $this->id;
+    }
+    
+    /** -------------------------- LIKES SECTION --------------------------- **/
+    
     /**
      * Like current postby given user
      * @param User $user
@@ -73,10 +80,6 @@ class Post extends PostParent
         $redis = Yii::$app->redis;
         $redis->sadd("post:{$this->getId()}:likes", $user->getId());
         $redis->sadd("user:{$user->getId()}:likes", $this->getId());
-    }
-    
-    public function getId(){
-        return $this->id;
     }
     
     /**
@@ -108,22 +111,111 @@ class Post extends PostParent
         return $redis->sismember("post:{$this->getId()}:likes", $user->getId());
     }
     
+    /** ------------------------- COMMENTS SECTION ------------------------- **/
+    
+    /**
+     * Add comments to user and to post in Redis. 
+     * @param CommentCreatedEvent $event
+     */
+    public function addCommentToRedis(CommentCreatedEvent $event)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        
+        $user_id = $event->getUserId();
+        $post_id = $event->getPostId();
+        $comment_id = $event->getCommentId();
+        
+        $redis->sadd("post:{$post_id}:comments", $comment_id);
+        $redis->sadd("user:{$user_id}:comments", $comment_id);
+    }
+    
+    /**
+     * Add comments to user and to post in Redis. 
+     * @param CommentDeletedEvent $event
+     */
+    public function deleteCommentFromRedis(CommentCreatedEvent $event)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        
+        $user_id = $event->getUserId();
+        $post_id = $event->getPostId();
+        $comment_id = $event->getCommentId();
+        
+        $redis->srem("post:{$post_id}:comments", $comment_id);
+        $redis->srem("user:{$user_id}:comments", $comment_id);
+    }
+    
+    /**
+     * Return comments ids
+     * @return int[]
+     */
+    private function getAvaliableCommentsIds()
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        return $redis->smembers("post:{$this->getId()}:comments");
+    }
+    
+    /**
+     * Get list of all comments (include deleted, unavaliable) of post
+     * @param int|false $limit
+     * @return array
+     */
     public function getComments($limit = self::COMMENTS_LIMIT)
     {
         $order = ['comment.created_at' => SORT_DESC];
-        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->all();
+        $query = $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order);
+        
+        if($limit)
+        {
+            $query->limit($limit);
+        }
+        
+        return $query->all();
     }
     
+    /**
+     * Get list of avaliable comments of pos
+     * @param int|false $limit
+     * @return array
+     */
     public function getAvaliableComments($limit = self::COMMENTS_LIMIT)
     {
+        $Ids = $this->getAvaliableCommentsIds();
         $order = ['comment.created_at' => SORT_DESC];
-        return $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->limit($limit)->where(['is_avaliable' => Comment::STATUS_ACTIVE])->all();
+        $query = $this->hasMany(Comment::class, ['post_id' => 'id'])->orderBy($order)->where(['is_avaliable' => Comment::STATUS_ACTIVE, 'id' => $Ids]);
+        
+        if($limit)
+        {
+            $query->limit($limit);
+        }
+        
+        return $query->all();
     }
     
+    /**
+     * @return mixed
+     */
     public function countComments()
     {
-        return $this->hasMany(Comment::class, ['post_id' => 'id'])->where(['is_avaliable' => Comment::STATUS_ACTIVE])->count();
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        return $redis->scard("post:{$this->getId()}:comments");
     }
+    
+    /**
+     * @return mixed
+     */
+    public static function countCommentsByPostId($id)
+    {
+        /* @var $redis Connection*/
+        $redis = Yii::$app->redis;
+        return $redis->scard("post:{$id}:comments");
+    }
+    
+    /** ------------------------ COMPLAINS SECTION ------------------------- **/
     
     /**
      * Add complaint to post from given user
