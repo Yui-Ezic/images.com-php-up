@@ -61,7 +61,7 @@ use yii\widgets\ActiveForm;
                                 <?php endif; ?>
                             </div>
                             <div class="post-comments">
-                                <a href="#"><?= count($comments)?> comments</a>
+                                <a href="#"><?= $post->countComments()?> comments</a>
 
                             </div>
                             <div class="post-date">
@@ -84,7 +84,7 @@ use yii\widgets\ActiveForm;
 
 
                     <div class="col-sm-12 col-xs-12">
-                        <h4><?= count($comments)?> comments</h4>
+                        <h4><?= $post->countComments()?> comments</h4>
                         <div class="comments-post">
 
                             <div class="single-item-title"></div>
