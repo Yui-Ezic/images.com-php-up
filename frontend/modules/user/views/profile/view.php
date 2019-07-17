@@ -59,7 +59,7 @@ $this->title = Html::encode($user->username);
                                 ?>
                                 <a href="<?= Url::to(['/user/profile/delete-picture']); ?>" class="btn btn-danger">Delete picture</a>
 
-                                <a href="#" class="btn btn-default">Edit profile</a>
+<!--                                <a href="#" class="btn btn-default">Edit profile</a>-->
                             <?php endif; ?>
 
                             <?php if ($currentUser && !$user->equals($currentUser)): ?>

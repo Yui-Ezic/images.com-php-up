@@ -1,6 +1,6 @@
 <?php
 return [
-    'adminEmail' => 'admin@example.com',
+    'adminEmail' => 'mishan221199@gmail.com',
     
     'maxFileSize' => 1024 * 1024 * 4, // 4 megabites
     'storagePath' => '@frontend/web/uploads/',
