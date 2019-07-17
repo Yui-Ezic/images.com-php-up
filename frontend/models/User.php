@@ -7,6 +7,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\redis\Connection;
+use frontend\models\events\UserNewFollowedEvent;
+use frontend\models\events\UserUnfollowedEvent;
 
 /**
  * User model
@@ -33,10 +35,19 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
     
+    const EVENT_USER_NEW_FOLLOWED = "user_new_followed";
+    const EVENT_USER_UNFOLLOWED = "user_unfollowed";
+    
     const DEFAULT_IMAGE = '/img/profile_default_image.jpg';
+    
+    
+    public function init() {
+        parent::init();
+        $this->on(self::EVENT_USER_UNFOLLOWED, [Yii::$app->feedService, 'unfollowUser']);
+        $this->on(self::EVENT_USER_NEW_FOLLOWED, [Yii::$app->feedService, 'followUser']);
+    }
 
-
-    /**
+        /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -235,6 +246,11 @@ class User extends ActiveRecord implements IdentityInterface
         $redis = Yii::$app->redis;
         $redis->sadd("user:{$this->getId()}:subscriptions", $user->getId());
         $redis->sadd("user:{$user->getId()}:followers", $this->getId());
+        
+        $event = new UserNewFollowedEvent();
+        $event->user_id = $this->getId();
+        $event->author_id = $user->getId();
+        $this->trigger(self::EVENT_USER_NEW_FOLLOWED, $event);
     }
     
     /**
@@ -247,6 +263,11 @@ class User extends ActiveRecord implements IdentityInterface
         $redis = Yii::$app->redis;
         $redis->srem("user:{$this->getId()}:subscriptions", $user->getId());
         $redis->srem("user:{$user->getId()}:followers", $this->getId());
+        
+        $event = new UserUnfollowedEvent();
+        $event->user_id = $this->getId();
+        $event->author_id = $user->getId();
+        $this->trigger(self::EVENT_USER_UNFOLLOWED, $event);
     }
     
     /**
