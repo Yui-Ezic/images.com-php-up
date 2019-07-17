@@ -203,7 +203,7 @@ header .header-top .brand-logo h1 span {
     border-bottom: 1px solid #ececec;
 }
 
-.blog-posts .post .post-likes, .blog-posts .post .post-bottom .post-likes a, .post .post-description, .post-report {
+.blog-posts .post .post-likes, .blog-posts .post .post-bottom .post-likes a, .post .post-description, .post-report, .post-delete {
     display: inline;
     font-family: 'Ubuntu', sans-serif;
     font-size: 13px;
@@ -224,21 +224,21 @@ header .header-top .brand-logo h1 span {
     margin: 0 10px;
 }
 
-.blog-posts .post .post-bottom .post-date {
+.blog-posts .post .post-bottom .post-date, .post-delete {
     position: relative;
     font-family: 'Ubuntu', sans-serif;
     display: inline-block;
     font-size: 13px;
 }
 
-.post-report {
+/*.post-report {
     position: relative;
     font-family: 'Ubuntu', sans-serif;
     display: inline-block;
     font-size: 13px;
     border-left: 1px solid #ececec;
     border-right: 0;
-}
+}*/
 
 
 .blog-posts .post .post-bottom .post-author a {

@@ -82,7 +82,7 @@ class PostForm extends Model
                 $event->post = $post;
                 
                 $this->trigger(self::EVENT_POST_CREATED, $event);
-                return true;
+                return $post;
             }
         }
         return false;

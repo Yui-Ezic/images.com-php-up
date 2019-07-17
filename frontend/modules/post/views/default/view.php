@@ -78,6 +78,11 @@ use yii\widgets\ActiveForm;
                                 <?php endif; ?>  
                             </div>
                             <?php endif; ?>
+                            <?php if ($currentUser->getId() == $post->user_id): ?>    
+                            <div class="post-delete">
+                                <a href="<?= Url::to(["/post/default/delete", 'id' => $post->getId()]) ?>" class="btn btn-danger">Delete</a>
+                            </div>  
+                            <?php endif; ?>
                         </div>
                     </article>
                     <!-- feed item -->

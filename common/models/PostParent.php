@@ -43,8 +43,7 @@ class PostParent extends ActiveRecord
     {
         $post = self::findOne($id);
         if($post) {
-            $post->deletePost();
-            return;
+            return $post->deletePost();           
         }
         
         self::deleteFromRedis($id);
@@ -57,7 +56,7 @@ class PostParent extends ActiveRecord
         
         self::deleteFromRedis($this->id);
         
-        $this->delete();
+        return $this->delete();
     }
     
     private static function deleteFromRedis($id) {

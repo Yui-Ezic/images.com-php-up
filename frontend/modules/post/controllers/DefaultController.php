@@ -27,16 +27,18 @@ class DefaultController extends Controller
             return $this->redirect(['/user/default/login']);
         }
         
-        $model = new PostForm(Yii::$app->user->identity);
+        /* @var $currentUser User */
+        $currentUser = Yii::$app->user->identity;
+        $model = new PostForm($currentUser);
         
         if ($model->load(Yii::$app->request->post()))
         {
             $model->picture = UploadedFile::getInstance($model, 'picture');
             
-            if($model->save())
+            if($post = $model->save())
             {
                 Yii::$app->session->setFlash('success', 'Post created!');
-                return $this->goHome();
+                return $this->redirect(['/post/default/view', 'id' => $post->getId()]);
             }
         }
         
@@ -241,5 +243,36 @@ class DefaultController extends Controller
             'success' => false,
             'text' => 'Error',
         ];
+    }
+    
+    /**
+     * Deletes an existing Post model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+         if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }   
+        
+        /* @var $comment Comment*/
+        $post = $this->findPost($id);
+        
+        /* @var $currentUser User*/
+        $currentUser = Yii::$app->user->identity;
+        
+        if ($currentUser->getId() != $post->user_id){
+            Yii::$app->session->setFlash('danger', 'Permission denied');
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        if(Post::DeletePostById($id)){
+            Yii::$app->session->setFlash('success', 'Post deleted');
+        }
+
+        return $this->goHome();
     }
 }
