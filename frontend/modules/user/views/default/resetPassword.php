@@ -8,24 +8,37 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 $this->title = 'Reset password';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-reset-password">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please choose your new password:</p>
+<?php
+$form = ActiveForm::begin([
+            'id' => 'reset-password-form',
+            'options' => [
+                'class' => 'login100-form validate-form flex-sb flex-w'
+            ],
+            'fieldConfig' => [
+                'options' => ['class' => 'wrap-input100 validate-input']
+            ],
+        ]);
+?>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'reset-password-form']); ?>
+<span class="login100-form-title p-b-53">
+    Please choose your new password:
+</span>
 
-                <?= $form->field($model, 'password')->passwordInput(['autofocus' => true]) ?>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
-                </div>
-
-            <?php ActiveForm::end(); ?>
-        </div>
-    </div>
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Password
+    </span>
 </div>
+<?= $form->field($model, 'password')->passwordInput(['class' => 'input100'])->label(false) ?>
+
+<div class="form-group container-login100-form-btn m-t-17">
+    <?= Html::submitButton('Save', ['class' => 'login100-form-btn']) ?>
+</div>
+
+<div class="w-full text-center p-t-55">
+    <?= Html::a('Back to login', ['/user/default/login'], ['class' => 'txt2 bo1']) ?>
+</div>
+
+<?php ActiveForm::end(); ?>

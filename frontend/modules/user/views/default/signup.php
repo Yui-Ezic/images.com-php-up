@@ -8,28 +8,51 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 $this->title = 'Signup';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-signup">
-    <h1><?= Html::encode($this->title) ?></h1>
+<?php
+$form = ActiveForm::begin([
+            'id' => 'form-signup',
+            'options' => [
+                'class' => 'login100-form validate-form flex-sb flex-w'
+            ],
+            'fieldConfig' => [
+                'options' => ['class' => 'wrap-input100 validate-input']
+            ],
+        ]);
+?>
 
-    <p>Please fill out the following fields to signup:</p>
+<span class="login100-form-title p-b-53">
+    Signup
+</span>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
-
-                <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-                <?= $form->field($model, 'email') ?>
-
-                <?= $form->field($model, 'password')->passwordInput() ?>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Signup', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
-                </div>
-
-            <?php ActiveForm::end(); ?>
-        </div>
-    </div>
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Username
+    </span>
 </div>
+<?= $form->field($model, 'username')->textInput(['autofocus' => true, 'class' => 'input100'])->label(false) ?>
+
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Email
+    </span>
+</div>
+<?= $form->field($model, 'email')->textInput(['class' => 'input100'])->label(false) ?>
+
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Password
+    </span>
+</div>
+<?= $form->field($model, 'password')->passwordInput(['class' => 'input100'])->label(false) ?>
+
+<div class="form-group container-login100-form-btn m-t-17">
+    <?= Html::submitButton('Signup', ['class' => 'login100-form-btn', 'name' => 'signup-button']) ?>
+</div>
+
+<div class="w-full text-center p-t-55">
+    <span class="txt2">Already registered?</span>
+    <?= Html::a('Login now', ['/user/default/login'], ['class' => 'txt2 bo1']) ?>
+</div>
+
+<?php ActiveForm::end(); ?>

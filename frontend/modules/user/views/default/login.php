@@ -1,44 +1,81 @@
 <?php
-
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model \common\models\LoginForm */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\authclient\widgets\AuthChoice;
 
 $this->title = 'Login';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+<?php
+$form = ActiveForm::begin([
+            'id' => 'login-form',
+            'options' => [
+                'class' => 'login100-form validate-form flex-sb flex-w'
+            ],
+            'fieldConfig' => [
+                'options' => ['class' => 'wrap-input100 validate-input']
+            ],
+        ]);
+?>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+<span class="login100-form-title p-b-53">
+    Login With
+</span>
 
-                <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
+<?php
+$auth = AuthChoice::begin([
+            'baseAuthUrl' => ['/user/default/auth'],
+            'popupMode' => false,
+            'options' => [
+                'style' => 'width: 100%;',
+                'class' => 'flex-sb',
+            ],
+        ]);
+?>
 
-                <?= $form->field($model, 'password')->passwordInput() ?>
+<?php foreach ($auth->getClients() as $externalService): ?>
+    <?php if ($externalService->getId() == 'google'): ?>
+        <a href="<?= $auth->createClientUrl($externalService); ?>" class="btn-google m-b-20">
+            <span class="auth-icon google" style="margin: 0 10px 0;"></span>
+            Google
+        </a>
+    <?php elseif ($externalService->getId() == 'facebook'): ?>
+        <a href="<?= $auth->createClientUrl($externalService); ?>" class="btn-face m-b-20">
+            <i class="fa fa-facebook-official"></i> Facebook
+        </a>
+    <?php endif; ?>
+<?php endforeach; ?>
 
-                <?= $form->field($model, 'rememberMe')->checkbox() ?>
+<?php AuthChoice::end() ?>
 
-                <div style="color:#999;margin:1em 0">
-                    If you forgot your password you can <?= Html::a('reset it', ['/user/default/request-password-reset']) ?>.
-                </div>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-                </div>
-
-            <?php ActiveForm::end(); ?>
-            <h5>Login with social:</h5>
-            <?= yii\authclient\widgets\AuthChoice::widget([
-                'baseAuthUrl' => ['/user/default/auth'],
-                'popupMode' => false,
-            ])?>
-        </div>
-    </div>
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Email
+    </span>
 </div>
+<?= $form->field($model, 'email')->textInput(['class' => 'input100'])->label(false) ?>
+
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Password
+    </span>
+</div>
+<?= $form->field($model, 'password')->passwordInput(['class' => 'input100'])->label(false) ?>
+
+<div class="form-group container-login100-form-btn m-t-17">
+    <?= Html::submitButton('Login', ['class' => 'login100-form-btn', 'name' => 'login-button']) ?>
+</div>
+
+<div class="w-full text-center p-t-55">
+    <span class="txt2">If you forgot your password you can</span>
+    <?= Html::a('reset it', ['/user/default/request-password-reset'], ['class' => 'txt2 bo1']) ?>
+    <br/>
+    <span class="txt2">Not a member?</span>
+    <?= Html::a('Sign up now', ['/user/default/signup'], ['class' => 'txt2 bo1']) ?>
+</div>
+
+<?php ActiveForm::end(); ?>

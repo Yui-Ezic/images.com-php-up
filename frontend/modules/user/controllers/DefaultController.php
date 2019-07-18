@@ -93,6 +93,8 @@ class DefaultController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
+        
+        $this->layout = 'form';
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -126,6 +128,8 @@ class DefaultController extends Controller
      */
     public function actionSignup()
     {
+        $this->layout = 'form';
+        
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration.');
@@ -144,6 +148,8 @@ class DefaultController extends Controller
      */
     public function actionRequestPasswordReset()
     {
+        $this->layout = 'form';
+        
         $model = new PasswordResetRequestForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
@@ -169,6 +175,8 @@ class DefaultController extends Controller
      */
     public function actionResetPassword($token)
     {
+        $this->layout = 'form';
+        
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidArgumentException $e) {
@@ -196,6 +204,7 @@ class DefaultController extends Controller
      */
     public function actionVerifyEmail($token)
     {
+        
         try {
             $model = new VerifyEmailForm($token);
         } catch (InvalidArgumentException $e) {
@@ -219,6 +228,8 @@ class DefaultController extends Controller
      */
     public function actionResendVerificationEmail()
     {
+        $this->layout = 'form';
+        
         $model = new ResendVerificationEmailForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {

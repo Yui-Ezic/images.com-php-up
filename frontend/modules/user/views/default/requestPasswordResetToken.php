@@ -10,22 +10,36 @@ use yii\bootstrap\ActiveForm;
 $this->title = 'Request password reset';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-request-password-reset">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out your email. A link to reset password will be sent there.</p>
+<?php
+$form = ActiveForm::begin([
+            'id' => 'request-password-reset-form',
+            'options' => [
+                'class' => 'login100-form validate-form flex-sb flex-w'
+            ],
+            'fieldConfig' => [
+                'options' => ['class' => 'wrap-input100 validate-input']
+            ],
+        ]);
+?>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
+<span class="login100-form-title p-b-53">
+    Please fill out your email. A link to reset password will be sent there.
+</span>
 
-                <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
-                </div>
-
-            <?php ActiveForm::end(); ?>
-        </div>
-    </div>
+<div class="p-t-31 p-b-9">
+    <span class="txt1">
+        Email
+    </span>
 </div>
+<?= $form->field($model, 'email')->textInput(['class' => 'input100'])->label(false) ?>
+
+<div class="form-group container-login100-form-btn m-t-17">
+    <?= Html::submitButton('Send', ['class' => 'login100-form-btn']) ?>
+</div>
+
+<div class="w-full text-center p-t-55">
+    <?= Html::a('Back to login', ['/user/default/login'], ['class' => 'txt2 bo1']) ?>
+</div>
+
+<?php ActiveForm::end(); ?>
