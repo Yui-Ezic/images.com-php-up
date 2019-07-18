@@ -13,7 +13,7 @@ use yii\helpers\Html;
     
     <?php $form = ActiveForm::begin(); ?>
         
-        <?= $form->field($model, 'picture')->fileInput(); ?>
+        <?= $form->field($model, 'picture')->fileInput(['accept' => 'image/*']); ?>
     
         <?= $form->field($model, 'description'); ?>
     

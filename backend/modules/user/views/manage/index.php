@@ -5,6 +5,7 @@ use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $currentUser backend\models\User */
 
 $this->title = 'Users';
 $this->params['breadcrumbs'][] = $this->title;
@@ -22,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($user) {
                     /* @var $post \backend\models\User */
-                    return Html::img($user->getImage(), ['width' => '50px']);
+                    return Html::img($user->getPicture(), ['width' => '50px']);
                 },
             ],
             'username',

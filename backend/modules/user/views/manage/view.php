@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($user) {
                     /* @var $post \backend\models\User */
-                    return Html::img($user->getImage(), ['width' => '120px']);
+                    return Html::img($user->getPicture(), ['width' => '120px']);
                 },
             ],
             'username',

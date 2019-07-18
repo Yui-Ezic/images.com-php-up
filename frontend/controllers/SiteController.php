@@ -3,9 +3,9 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\web\Controller;
-use frontend\models\ContactForm;
 use frontend\models\User;
 use yii\web\Cookie;
+use yii\filters\AccessControl;
 
 /**
  * Site controller
@@ -24,6 +24,25 @@ class SiteController extends Controller
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            ],
+        ];
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors(): array {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['language'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['language'],
+                        'verbs' => ['POST'],
+                    ],
+                ],
             ],
         ];
     }
@@ -66,8 +85,7 @@ class SiteController extends Controller
      * @return mixed
      */
     public function actionLanguage()
-    {
-        // Hometask: check if language is supported        
+    {   
         $language = Yii::$app->request->post('language');
         
         $supportedLanguages = Yii::$app->params['supportedLanguages'];

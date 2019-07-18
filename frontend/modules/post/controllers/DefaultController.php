@@ -11,12 +11,33 @@ use yii\web\Response;
 use frontend\models\User;
 use frontend\modules\post\models\forms\CommentForm;
 use frontend\models\Comment;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * Default controller for the `post` module
  */
 class DefaultController extends Controller
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors(): array {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['like' , 'unlike', 'delete-comment', 'refresh-comment', 'complain'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['like' , 'unlike', 'delete-comment', 'refresh-comment', 'complain'],
+                        'verbs' => ['POST'],
+                    ],
+                ],
+            ],
+        ];
+    }
+    
     /**
      * Renders the create viewfor the module
      * @return string
