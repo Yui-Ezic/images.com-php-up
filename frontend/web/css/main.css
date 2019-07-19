@@ -232,6 +232,10 @@ footer {
     font-size: 24px;
 }
 
+.user-name>a {
+   color: black;
+}
+
 .user-right-info {
     margin-top: 20px;
     align-items: center;

@@ -7,7 +7,6 @@
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
-use dosamigos\fileupload\FileUpload;
 use yii\web\JqueryAsset;
 
 $this->title = Html::encode($user->username);
@@ -23,7 +22,9 @@ $this->title = Html::encode($user->username);
             <div class="col-lg-9 col-md-8">
                 <div class="user-right-top d-flex">
                     <div class="user-name">
-                        Misha L
+                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => $user->getNickname()])?>">
+                            <?= Html::encode($user->username) ?>
+                        </a>
                     </div>
                     <div class="user-settings">
                         <?php if ($currentUser): ?>
