@@ -532,4 +532,8 @@ iframe {
   .btn-google {
     width: 100%;
   }
+  
+  .flex-sb {
+      flex-direction: column;
+  }
 }
