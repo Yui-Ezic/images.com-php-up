@@ -11,73 +11,74 @@ use yii\helpers\HtmlPurifier;
 $this->title = 'Newsfeed';
 ?>
 
-<div class="page page-post col-sm-12 col-xs-12">
-    <div class="blog-posts blog-posts-large">
-
-        <div class="row">
-
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-lg-offset-2">
             <?php if ($feedItems): ?>
                 <?php foreach ($feedItems as $feedItem): ?>
                     <?php /* @var $feedItem Feed */ ?>
-
-                    <!-- feed item -->
-                    <article class="post col-sm-12 col-xs-12">                                            
-                        <div class="post-meta">
-                            <div class="post-title">
-                                <img src="<?php echo $feedItem->author_picture; ?>" class="author-image" />
-                                <div class="author-name">
-                                    <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($feedItem->author_nickname) ? $feedItem->author_nickname : $feedItem->author_id]); ?>">
-                                    <?php echo Html::encode($feedItem->author_name); ?>
+                    <div class="post">
+                        <div class="post-title d-flex">
+                            <div class="post-avatar center-cropped" style="background-image: url('<?php echo $feedItem->author_picture; ?>');">
+                                <img src="<?php echo $feedItem->author_picture; ?>" alt="">
+                            </div>
+                            <div class="post-title-right">
+                                <div class="post-author">
+                                    <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($feedItem->author_nickname) ? $feedItem->author_nickname : $feedItem->author_id]); ?>">
+                                        <?= Html::encode($feedItem->author_name); ?>
                                     </a>
+                                </div>
+                                <div class="post-date">
+                                    <?= Yii::$app->formatter->asDatetime($feedItem->post_created_at); ?>9
                                 </div>
                             </div>
                         </div>
-                        <div class="post-type-image">
+                        <div class="post-description">
+                            <?php echo HtmlPurifier::process($feedItem->post_description); ?>
+                        </div>
+                        <div class="post-image">
                             <a href="<?= Url::to(['/post/default/view', 'id' => $feedItem->post_id]) ?>">
-                                <img src="<?php echo Yii::$app->storage->getFile($feedItem->post_filename); ?>" alt="">
+                                <img src="<?= Yii::$app->storage->getFile($feedItem->post_filename); ?>" alt="post image">
                             </a>
                         </div>
-                        <div class="post-description">
-                            <p><?php echo HtmlPurifier::process($feedItem->post_description); ?></p>
-                        </div>
-                        <div class="post-bottom">
-                            <div class="post-likes">
-<!--                                <a href="#" class="btn btn-secondary"><i class="fa fa-lg fa-heart-o"></i></a>-->
-                                Likes: <span class="likes-count"><?php echo $feedItem->countLikes(); ?></span>
-
-                                <a href="#" class="btn btn-default button-unlike <?php echo ($currentUser->likesPost($feedItem->post_id)) ? "" : "display-none"; ?>" data-id="<?php echo $feedItem->post_id; ?>">
-                                    Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
+                        <div class="post-bottom d-flex">
+                            <div class="post-like">
+                                <a href="#" class="button-like <?php echo ($currentUser->likesPost($feedItem->post_id)) ? "display-none" : ""; ?>" data-id="<?php echo $feedItem->post_id; ?>">
+                                    <i class="fa fa-heart-o "></i>
+                                    <span class="likes-count"><?php echo $feedItem->countLikes(); ?></span>
                                 </a>
-                                <a href="#" class="btn btn-default button-like <?php echo ($currentUser->likesPost($feedItem->post_id)) ? "display-none" : ""; ?>" data-id="<?php echo $feedItem->post_id; ?>">
-                                    Like&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-up"></span>
+                                <a href="#" class="button-unlike <?php echo ($currentUser->likesPost($feedItem->post_id)) ? "" : "display-none"; ?>" data-id="<?php echo $feedItem->post_id; ?>">
+                                    <i class="fa fa-heart "></i>
+                                    <span class="likes-count"><?php echo $feedItem->countLikes(); ?></span>
                                 </a>
                             </div>
-                            <div class="post-comments">
-                                <a href="#"><?= $feedItem->countComments()?> Comments</a>
-
-                            </div>
-                            <div class="post-date">
-                                <span><?php echo Yii::$app->formatter->asDatetime($feedItem->post_created_at); ?></span>    
+                            <div class="post-comment">
+                                <a href="#">
+                                    <i class="fa fa-comment-o"></i> <?= $feedItem->countComments() ?>
+                                </a>
                             </div>
                             <div class="post-report">
-                                <?php if(!$feedItem->isReported($currentUser)):?>
-                                <a href="#" class="btn btn-default button-complain" data-id="<?= $feedItem->post_id ?>">
-                                    Report post <i class="fa fa-cog fa-spin fa-fw icon-preloader" style="display:none"></i>
-                                </a>    
-                                <?php else: ?>
-                                <p>Post has been reported</p>
-                                <?php endif; ?>
+                                <a href="#">
+                                    <?php if (!$feedItem->isReported($currentUser)): ?>
+                                        <a href="#" class="button-complain" data-id="<?= $feedItem->post_id ?>">
+                                            <i class="fa fa-bullhorn"></i> Report <i class="fa fa-cog fa-spin fa-fw icon-preloader" style="display:none"></i>
+                                        </a>    
+                                    <?php else: ?>
+                                        <i class="fa fa-bullhorn"></i> Reported
+                                    <?php endif; ?>
+                                </a>
                             </div>
+<!--                            <div class="post-delete">
+                                <a href=""><i class="fa fa-trash-o"></i></a>
+                            </div>-->
                         </div>
-                    </article>
-                    <!-- feed item -->           
+                    </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="col-md-12">
                     Nobody posted yet!
                 </div>
             <?php endif; ?>
-
         </div>
     </div>
 </div>

@@ -23,9 +23,10 @@
         "yiisoft/yii2-redis": "~2.0.0",
         "2amigos/yii2-file-upload-widget": "~1.0",
         "intervention/image": "^2.4@dev",
-        "bower-asset/jquery": "1.12.4",
+        "bower-asset/jquery": "3.4.0",
         "bower-asset/bootstrap": "3.3.5",
-        "bower-asset/font-awesome": "4.4.0"
+        "bower-asset/font-awesome": "4.4.0",
+        "yiisoft/yii2-bootstrap4": "^1.0@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
