@@ -53,7 +53,7 @@ $this->title = 'Newsfeed';
                                 </a>
                             </div>
                             <div class="post-comment">
-                                <a href="#">
+                                <a>
                                     <i class="fa fa-comment-o"></i> <?= $feedItem->countComments() ?>
                                 </a>
                             </div>

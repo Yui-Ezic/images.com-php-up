@@ -22,19 +22,19 @@ $this->title = Html::encode($user->username);
             <div class="col-lg-9 col-md-8">
                 <div class="user-right-top d-flex">
                     <div class="user-name">
-                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => $user->getNickname()])?>">
+                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => $user->getNickname()]) ?>">
                             <?= Html::encode($user->username) ?>
                         </a>
                     </div>
                     <div class="user-profile-settings">
                         <?php if ($currentUser): ?>
                             <?php if ($user->equals($currentUser)): ?>
-                        <a href="<?= Url::to(['/user/settings/edit'])?>" class="btn btn-default"> Edit profile</a>
+                                <a href="<?= Url::to(['/user/settings/edit']) ?>" class="btn btn-default"> Edit profile</a>
                             <?php else: ?>
                                 <?php if (!$currentUser->isFollowing($user)): ?>
-                                <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
+                                    <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>
                                 <?php else: ?>
-                                <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
+                                    <a href="<?= Url::to(['/user/profile/unsubscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Unsubscribe</a>
                                 <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
@@ -42,7 +42,7 @@ $this->title = Html::encode($user->username);
                 </div>
                 <div class="user-right-info d-flex">
                     <div class="user-info-post">
-                        <a href="#"><?= $user->getPostCount() ?> posts</a>
+                        <a href="#gallery-section"><?= $user->getPostCount() ?> posts</a>
                     </div>
                     <div class="user-info-followers">
                         <a href="#" data-toggle="modal" data-target="#FollowersModal"> <?= $user->countFollowers() ?> followers</a>
@@ -54,17 +54,19 @@ $this->title = Html::encode($user->username);
                 <div class="user-right-description">
                     <?= HtmlPurifier::process($user->about) ?>
                 </div>
-                <div class="">
-                    <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
-                        <br/>Friends, who also following <?= Html::encode($user->username) ?>:
-                        <?php foreach ($mutualSubscriptions as $item): ?>
-                            <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
-                                <?= Html::encode($item['username']) ?> 
-                            </a>
-                        <?php endforeach; ?>
-                        <br/>
-                    <?php endif; ?>
-                </div>
+                <?php if ($currentUser && !$user->equals($currentUser)): ?>
+                    <div class="">
+                        <?php if ($mutualSubscriptions = $currentUser->getMutualSubscriptionsTo($user)): ?>
+                            <br/>Friends, who also following <?= Html::encode($user->username) ?>:
+                            <?php foreach ($mutualSubscriptions as $item): ?>
+                                <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($item['nickname'] ? $item['nickname'] : $item['id'])]) ?>">
+                                    <?= Html::encode($item['username']) ?> 
+                                </a>
+                            <?php endforeach; ?>
+                            <br/>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>  
             </div>
         </div>
     </div>
@@ -74,17 +76,17 @@ $this->title = Html::encode($user->username);
     <hr>
 </div>
 
-<section class="gallery">
+<section id="gallery-section" class="gallery">
     <div class="container">
         <div class="row">
             <?php foreach ($posts as $post): ?>
-            <div class="col-sm-6 col-md-4 col-lg-3">
-                <div class="gallery-item center-cropped" style="background-image: url('<?= Yii::$app->storage->getFile($post->filename) ?>');">
-                    <a href="<?= Url::to(['/post/default/view', 'id' => $post->getId()]) ?>">
-                        <img src="<?= Yii::$app->storage->getFile($post->filename) ?>" alt="">
-                    </a>
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="gallery-item center-cropped" style="background-image: url('<?= Yii::$app->storage->getFile($post->filename) ?>');">
+                        <a href="<?= Url::to(['/post/default/view', 'id' => $post->getId()]) ?>">
+                            <img src="<?= Yii::$app->storage->getFile($post->filename) ?>" alt="">
+                        </a>
+                    </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     </div>
@@ -101,11 +103,11 @@ $this->title = Html::encode($user->username);
             <div class="modal-body">
                 <div class="row">
                     <?php foreach ($user->getSubscriptions() as $subscription): ?>
-                    <div class="col-md-12">
-                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($subscription['nickname'] ? $subscription['nickname'] : $subscription['id'])]) ?>">
-                            <?= Html::encode($subscription['username']) ?>
-                        </a>
-                    </div>
+                        <div class="col-md-12"><h5>
+                                <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($subscription['nickname'] ? $subscription['nickname'] : $subscription['id'])]) ?>">
+                                    <?= Html::encode($subscription['username']) ?>
+                                </a>
+                            </h5></div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -126,11 +128,11 @@ $this->title = Html::encode($user->username);
             <div class="modal-body">
                 <div class="row">
                     <?php foreach ($user->getFollowers() as $follower): ?>
-                    <div class="col-md-12">
-                        <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($follower['nickname'] ? $follower['nickname'] : $follower['id'])]) ?>">
-                            <?= Html::encode($follower['username']) ?>
-                        </a>
-                    </div>
+                        <div class="col-md-12"><h5>
+                            <a href="<?= Url::to(['/user/profile/view', 'nickname' => ($follower['nickname'] ? $follower['nickname'] : $follower['id'])]) ?>">
+                                <?= Html::encode($follower['username']) ?>
+                            </a>
+                        </h5></div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -144,5 +146,5 @@ $this->title = Html::encode($user->username);
 
 <?php
 $this->registerJsFile('@web/js/likes.js', [
-'depends' => JqueryAsset::className(),
+    'depends' => JqueryAsset::className(),
 ]);

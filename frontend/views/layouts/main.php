@@ -7,6 +7,7 @@ use yii\bootstrap\Nav;
 use frontend\assets\AppAsset;
 use frontend\assets\FontAwesomeAsset;
 use common\widgets\Alert;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 FontAwesomeAsset::register($this);
@@ -79,7 +80,7 @@ FontAwesomeAsset::register($this);
             <div class="container">
                 <div class="row">
                     <div class="col text-center">
-                        <a href="#">
+                        <a href="<?= Url::to(['/site/about'])?>">
                             Images | 2019
                         </a>
                     </div>
