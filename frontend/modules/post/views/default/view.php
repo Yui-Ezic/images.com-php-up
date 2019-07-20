@@ -78,29 +78,6 @@ use yii\widgets\ActiveForm;
 
         <div class="col-lg-8 col-lg-offset-2">
             <div class="comments">
-                <?php foreach ($comments as $comment): ?>
-                    <div id='comment-<?= $comment->id ?>' class="comment d-flex">
-                        <div class="comment-author-avatar center-cropped" style="background-image: url('<?= $comment->user->getPicture() ?>');">
-                            <img src="<?= $comment->user->getPicture() ?>" alt="">
-                        </div>
-                        <div class="comment-right">
-                            <div class="comment-author-name">
-                                <a href="<?= Url::to(['/user/profile/view', 'nickname' => $comment->user->getNickname()]) ?>">
-                                    <?= $comment->user->username ?>
-                                </a> 
-                            </div>
-                            <div id="textArea-<?= $comment->id ?>" class="comment-text">
-                                <?= Html::encode($comment->text) ?>
-                            </div>
-                            <?php if ($currentUser && $currentUser->equals($comment->user)): ?>
-                                <div class="comment-buttons d-flex">
-                                    <a href="#" class="comment-delete" data-id="<?= $comment->id ?>"><i class="fa fa-trash-o"></i></a>
-                                    <a href="#" class="comment-refresh display-none" data-id="<?= $comment->id ?>"><i class="fa fa-refresh"></i></a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
                 <?php if ($currentUser): ?>
                     <div class="comment d-flex">
                         <div class="comment-author-avatar center-cropped" style="background-image: url('<?= $currentUser->getPicture() ?>');">
@@ -137,6 +114,29 @@ use yii\widgets\ActiveForm;
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php foreach ($comments as $comment): ?>
+                    <div id='comment-<?= $comment->id ?>' class="comment d-flex">
+                        <div class="comment-author-avatar center-cropped" style="background-image: url('<?= $comment->user->getPicture() ?>');">
+                            <img src="<?= $comment->user->getPicture() ?>" alt="">
+                        </div>
+                        <div class="comment-right">
+                            <div class="comment-author-name">
+                                <a href="<?= Url::to(['/user/profile/view', 'nickname' => $comment->user->getNickname()]) ?>">
+                                    <?= $comment->user->username ?>
+                                </a> 
+                            </div>
+                            <div id="textArea-<?= $comment->id ?>" class="comment-text">
+                                <?= Html::encode($comment->text) ?>
+                            </div>
+                            <?php if ($currentUser && $currentUser->equals($comment->user)): ?>
+                                <div class="comment-buttons d-flex">
+                                    <a href="#" class="comment-delete" data-id="<?= $comment->id ?>"><i class="fa fa-trash-o"></i></a>
+                                    <a href="#" class="comment-refresh display-none" data-id="<?= $comment->id ?>"><i class="fa fa-refresh"></i></a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>

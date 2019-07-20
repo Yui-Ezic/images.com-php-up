@@ -28,6 +28,9 @@ use frontend\models\events\UserUnfollowedEvent;
  */
 class User extends UserParent
 {   
+    
+    const MUTUAL_SUBSCRIPTIONS_LIMIT = 3;
+    
     /**
      * {@inheritdoc}
      */
@@ -128,7 +131,7 @@ class User extends UserParent
      * @param \frontend\models\User $user
      * @return array
      */
-    public function getMutualSubscriptionsTo(User $user)
+    public function getMutualSubscriptionsTo(User $user, $limit = self::MUTUAL_SUBSCRIPTIONS_LIMIT)
     {
         $thisSub_key = "user:{$this->getId()}:subscriptions";
         $userFollowers_key = "user:{$user->getId()}:followers";
@@ -137,7 +140,7 @@ class User extends UserParent
         $redis = Yii::$app->redis;
         
         $ids = $redis->sinter($thisSub_key, $userFollowers_key);
-        return User::find()->select('id, username, nickname')->where(['id' => $ids])->orderBy('username')->asArray()->all();
+        return User::find()->select('id, username, nickname')->where(['id' => $ids])->orderBy('username')->limit($limit)->asArray()->all();
     }
     
     /**
