@@ -7,7 +7,6 @@ use yii\bootstrap\Nav;
 use frontend\assets\AppAsset;
 use frontend\assets\FontAwesomeAsset;
 use common\widgets\Alert;
-use yii\helpers\Url;
 
 AppAsset::register($this);
 FontAwesomeAsset::register($this);

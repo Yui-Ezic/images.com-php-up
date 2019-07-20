@@ -58,19 +58,12 @@ $this->title = 'Newsfeed';
                                 </a>
                             </div>
                             <div class="post-report">
-                                <a href="#">
-                                    <?php if (!$feedItem->isReported($currentUser)): ?>
-                                        <a href="#" class="button-complain" data-id="<?= $feedItem->post_id ?>">
-                                            <i class="fa fa-bullhorn"></i> Report <i class="fa fa-cog fa-spin fa-fw icon-preloader" style="display:none"></i>
-                                        </a>    
-                                    <?php else: ?>
-                                        <i class="fa fa-bullhorn"></i> Reported
-                                    <?php endif; ?>
-                                </a>
+                                <?php if (!$feedItem->isReported($currentUser)): ?>
+                                    <a href="#" class="button-complain" data-id="<?= $feedItem->post_id ?>">
+                                        <i class="fa fa-bullhorn"></i> Report <i class="fa fa-cog fa-spin fa-fw icon-preloader" style="display:none"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
-<!--                            <div class="post-delete">
-                                <a href=""><i class="fa fa-trash-o"></i></a>
-                            </div>-->
                         </div>
                     </div>
                 <?php endforeach; ?>

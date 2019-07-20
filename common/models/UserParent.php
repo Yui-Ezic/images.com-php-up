@@ -44,6 +44,12 @@ class UserParent extends ActiveRecord implements IdentityInterface
     
     const DEFAULT_IMAGE = 'img/profile_default_image.jpg';
     
+    const NAME_MIN = 3;
+    const NAME_MAX = 20;
+    
+    const ABOUT_MIN = 6;
+    const ABOUT_MAX = 255;
+    
 
     /**
      * {@inheritdoc}
@@ -69,6 +75,12 @@ class UserParent extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            [['nickname', 'username'], 'string', 'length' => [self::NAME_MIN, self::NAME_MAX]],
+            ['nickname', 'unique'],
+            [['nickname'], 'match', 'pattern' => '/^[a-z]\w*$/i'],
+            [['username', 'nickname', 'about'], 'trim'],
+            ['email', 'email'],
+            ['about', 'string', 'length' => [self::ABOUT_MIN, self::ABOUT_MAX]],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];

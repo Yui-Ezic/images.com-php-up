@@ -307,3 +307,52 @@ footer {
 .comment-buttons {
     margin-top: 5px;
 }
+
+/* SETTINGS */
+.settings-window {
+    margin-top: 30px;
+    background-color: white;
+    padding: 15px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .25);
+    border-radius: 5px;
+}
+
+.user-settings {
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.user-settings>div {
+    margin-right: 20px;
+}
+
+.user-settings-avatar {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.user-settings-name {
+    font-size: 20px;
+}
+
+.user-avatar-button {
+    justify-content: center;
+}
+
+.user-avatar-button .btn {
+    margin-right: 20px;
+}
+
+/* SETTINGS NAVIGATION */
+.settings-nav>li.active {
+    background-color: #f3f3f3;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .user-settings-left {
+        margin-bottom: 20px;
+    }
+}

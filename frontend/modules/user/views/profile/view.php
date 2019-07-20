@@ -26,10 +26,10 @@ $this->title = Html::encode($user->username);
                             <?= Html::encode($user->username) ?>
                         </a>
                     </div>
-                    <div class="user-settings">
+                    <div class="user-profile-settings">
                         <?php if ($currentUser): ?>
                             <?php if ($user->equals($currentUser)): ?>
-                            <a href="#" class="btn btn-default"> Edit profile</a>
+                        <a href="<?= Url::to(['/user/settings/edit'])?>" class="btn btn-default"> Edit profile</a>
                             <?php else: ?>
                                 <?php if (!$currentUser->isFollowing($user)): ?>
                                 <a href="<?= Url::to(['/user/profile/subscribe', 'id' => $user->getId()]) ?>" class="btn btn-info">Subscribe</a>

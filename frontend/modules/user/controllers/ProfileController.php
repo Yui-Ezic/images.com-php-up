@@ -5,9 +5,6 @@ namespace frontend\modules\user\controllers;
 use yii\web\Controller;
 use frontend\models\User;
 use Yii;
-use frontend\modules\user\models\forms\PictureForm;
-use yii\web\UploadedFile;
-use yii\web\Response;
 use frontend\models\Post;
 
 
@@ -25,8 +22,6 @@ class ProfileController extends Controller
         /* @var $currentUser User */
         $currentUser = Yii::$app->user->identity;
         
-        $modelPicture = new PictureForm;
-        
         /* @var $user User */
         $user = $this->findUser($nickname);
         
@@ -36,7 +31,6 @@ class ProfileController extends Controller
         return $this->render('view', [
             'user' => $user,
             'currentUser' => $currentUser,
-            'modelPicture' => $modelPicture,
             'posts' => $posts,
         ]);
     }
@@ -109,54 +103,6 @@ class ProfileController extends Controller
             return $user;
         }
         throw new NotFoundHttpException();
-    }
-    
-    /**
-     * @return json array
-     */
-    public function actionUploadPicture()
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        
-        if (Yii::$app->user->isGuest) {
-            return ['success' => false, 'errors' => 'User is guest'];
-        }
-        
-        $model = new PictureForm;
-        $model->picture = UploadedFile::getInstance($model, 'picture');
-        
-        if ($model->validate()) 
-        {    
-            /* @var $user User */
-            $user = Yii::$app->user->identity;
-            $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
-            
-            if ($user->save(false, ['picture'])) {
-                return ['success' => true, 
-                    'pictureUri' => Yii::$app->storage->getFile($user->picture),
-                ];
-            }
-        }
-        
-        return ['success' => false, 'errors' => $model->getErrors()['picture']];
-    }
-    
-    public function actionDeletePicture()
-    {
-        if (Yii::$app->user->isGuest) {
-            return $this->redirect(['/user/default/login']);
-        }
-        
-        /* @var $user User */
-        $user = Yii::$app->user->identity;
-        if ($user->deletePicture()) 
-        {
-            Yii::$app->session->setFlash('success', 'Picture deleted');
-        } else {
-            Yii::$app->session->setFlash('danger', 'Error occured');
-        }
-        
-        return $this->redirect(['/user/profile/view', 'nickname' => $user->getNickname()]);
     }
 
 
