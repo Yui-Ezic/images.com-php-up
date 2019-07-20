@@ -53,7 +53,7 @@ $this->title = 'Newsfeed';
                                 </a>
                             </div>
                             <div class="post-comment">
-                                <a>
+                                <a href="<?= Url::to(['/post/default/view', 'id' => $post->id]) ?>">
                                     <i class="fa fa-comment-o"></i> <?= $post->countComments() ?>
                                 </a>
                             </div>
