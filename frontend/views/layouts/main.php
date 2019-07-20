@@ -45,7 +45,7 @@ FontAwesomeAsset::register($this);
                         $menuItems[] = ['label' => Yii::t('menu', 'Signup'), 'url' => ['/user/default/signup']];
                         $menuItems[] = ['label' => Yii::t('menu', 'Login'), 'url' => ['/user/default/login']];
                     } else {
-                        $menuItems[] = ['label' => Yii::t('Recent posts', 'Recent posts'), 'url' => ['/site/recent-actions']];
+                        $menuItems[] = ['label' => Yii::t('menu', 'Recent posts'), 'url' => ['/site/recent-actions']];
                         $menuItems[] = ['label' => Yii::t('menu', 'My profile'), 'url' => ['/user/profile/view', 'nickname' => Yii::$app->user->identity->getNickname()]];
                         $menuItems[] = ['label' => Yii::t('menu', 'Create Post'), 'url' => ['/post/default/create']];
                         $menuItems[] = '<li>'
