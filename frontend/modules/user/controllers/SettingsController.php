@@ -8,8 +8,25 @@ use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use yii\web\Response;
 use frontend\modules\user\models\forms\PictureForm;
+use yii\filters\VerbFilter;
 
-class SettingsController extends \yii\web\Controller {
+class SettingsController extends \yii\web\Controller 
+{
+    
+    public function behaviors(): array {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'edit' => ['get', 'post'],
+                    'avatar' => ['get'],
+                    'upload-picture' => ['post'],
+                    'delete-picture' => ['get'],
+                    'change-password' => ['get', 'post'],
+                ],
+            ],
+        ];
+    }
 
     /**
      * Updates an existing User model.
@@ -96,6 +113,10 @@ class SettingsController extends \yii\web\Controller {
     }
 
     public function actionChangePassword() {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
         /* @var $currentUser User */
         $currentUser = Yii::$app->user->identity;
 

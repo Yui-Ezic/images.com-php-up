@@ -25,7 +25,7 @@ $this->title = "Edit user: " . $currentUser->username;
                 </div>
             </div>
 
-            <h1>Not alaliable at this time</h1>
+            <h1>Not avaliable at this time</h1>
         </div>
     </div>
 </div>

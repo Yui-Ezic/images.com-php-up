@@ -6,6 +6,7 @@ use yii\web\Controller;
 use frontend\models\User;
 use yii\web\Cookie;
 use yii\filters\AccessControl;
+use frontend\models\Post;
 
 /**
  * Site controller
@@ -18,9 +19,6 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
@@ -105,5 +103,23 @@ class SiteController extends Controller
         ]);
         Yii::$app->response->cookies->add($languageCookie);
         return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+    }
+    
+    public function actionRecentActions()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['/user/default/login']);
+        }
+        
+        /* @var $currentUser User*/
+        $currentUser = Yii::$app->user->identity;
+        
+        $limit = Yii::$app->params['feedPostLimit'];
+        $posts = Post::getRecentPosts($limit);
+        
+        return $this->render('recentActions', [
+            'currentUser' => $currentUser,
+            'posts' => $posts,
+        ]);
     }
 }

@@ -7,4 +7,6 @@ return [
     'Create Post' => 'Добавить запись',
     'Newsfeed' => 'Лента новостей',
     'Logout ({username})' => 'Выход ({username})',
+    'Recent posts' => 'Последние обновления',
+    
 ];

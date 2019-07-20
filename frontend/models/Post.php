@@ -25,6 +25,9 @@ class Post extends PostParent
 {
     
     const COMMENTS_LIMIT = 10;
+    const POSTS_LIMIT = 20;
+    
+    private $user;
     
     /**
      * {@inheritdoc}
@@ -61,7 +64,11 @@ class Post extends PostParent
      * @return User|null
      */
     public function getUser(){
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        if(!$this->user)
+        {
+            $this->user = $this->hasOne(User::className(), ['id' => 'user_id']);
+        }
+        return $this->user;
     }
     
     public function getId(){
@@ -243,5 +250,11 @@ class Post extends PostParent
         /* @var $redis Connection */
         $redis = Yii::$app->redis;
         return $redis->sismember("post:{$this->id}:complaints", $user->getId());
+    }
+    
+    public static function getRecentPosts($limit = self::POSTS_LIMIT)
+    {
+        $order = ['created_at' => SORT_DESC];
+        return self::find()->orderBy($order)->limit($limit)->all();
     }
 }
